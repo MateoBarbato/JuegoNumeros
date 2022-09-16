@@ -3,14 +3,14 @@ import {colors} from '../../constants/colors'
 
 export const styles = StyleSheet.create({
     container: {
-        shadowColor: colors.black,
+        shadowColor: "#000",
         shadowOffset: {
-            width: 0,
-            height: 2,
+	        width: 0,
+	        height: 2,
         },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
-        elevation: 4,
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
         backgroundColor: colors.background,
         borderRadius: 5,
     }
