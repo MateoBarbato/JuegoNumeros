@@ -1,8 +1,9 @@
 import {React, useState} from "react";
-import { View, Text, StyleSheet, TextInput, Button} from 'react-native'
+import { View, Text, StyleSheet, Button, TouchableWithoutFeedback, Keyboard, ScrollView} from 'react-native'
 import {colors} from '../constants/colors'
 import  Card  from '../components/card/index'
 import Input from "../components/input";
+import NumberContainer from "../components/number-container";
 
 
 
@@ -25,9 +26,8 @@ const styles = StyleSheet.create({
         paddingVertical:5
     },
     inputContainer:{
-        width:320,
-        maxWidth:'75%',
-        minHeight:150,
+        width:'75%',
+        minHeight:200,
         borderRadius:5,
         flex:1,
         flexGrow:0.30,
@@ -51,7 +51,24 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-around',
         marginTop:20,
+    },
+    summaryContainer:{
+        width:'75%',
+        height:180,
+        marginHorizontal:20,
+        alignItems:"center",
+        paddingVertical:10,
+        marginTop:20,
+    },
+    summaryText:{
+        marginVertical:5,
+        fontSize:18,
+
+    },
+    containerScroll:{
+        flex:1
     }
+    
 
 });
 
@@ -60,43 +77,71 @@ const styles = StyleSheet.create({
 
 
 
-const StartGameScreen = () => {
+const StartGameScreen = ({onStartGame}) => {
 
     const [inputValue,setInputValue] = useState('')
-
-    const LimpiarHandler = () => {
-
-    }
+    const [confirmed,setConfirmed] = useState(false)
+    const [selectedNumber,setSelectedNumber]= useState(0)
     
-    const ConfirmHandler = () => {
-    
-    }
 
     const onHandleChangeText = (text) => {
         setInputValue(text.replace(/[^0-9]/g, ''))
     }
 
+    const onReset = () => {
+        setInputValue('');
+        setConfirmed(false)
+        setSelectedNumber(0)
+        Keyboard.dismiss
+    }
+    const onConfirmed = () => {
+        const chosenNumber = parseInt(inputValue,10)
+        if(isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber >99) return;
+            setConfirmed(true)
+            setSelectedNumber(chosenNumber)
+            setInputValue('')
+    }
+
+    const onHandleStartGame= () => {
+        onStartGame(selectedNumber);
+    }
+
+    const ConfirmedOutput = ()=> confirmed && (
+        <Card style={styles.summaryContainer}>
+            <Text style={styles.summaryText}>Tu seleccion </Text>
+            <NumberContainer> {selectedNumber} </NumberContainer>
+            <Button title="Iniciar Juego"
+                    onPress={()=>onHandleStartGame()}
+                    color={colors.primary}
+            />
+        </Card>
+    )
+
     return (
-       <View style={styles.container}>
-            <Text style={styles.title}>Comenzar Juego!</Text>
-            <Card style={styles.inputContainer}>
-                <Text style={styles.label}>Elija un numero</Text>
-                <Input style={styles.input} 
-                    keyboardType={'numeric'} 
-                    maxLength={2}
-                    blurOnSubmit
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    value={inputValue}
-                    onChangeText={(text)=>{onHandleChangeText(text)}}
-                />
-                <View style={styles.buttonContainer}>
-                <Button title="Limpiar" onPress={LimpiarHandler} color={colors.primary}/>
-                <Button title="Confirmar" onPress={ConfirmHandler} color={colors.primary}/>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <ScrollView style={styles.containerScroll}>
+                <View style={styles.container}>
+                    <Text style={styles.title}>Comenzar Juego!</Text>
+                    <Card style={styles.inputContainer}>
+                        <Text style={styles.label}>Elija un numero</Text>
+                        <Input style={styles.input} 
+                            keyboardType={'numeric'} 
+                            maxLength={2}
+                            blurOnSubmit
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            value={inputValue}
+                            onChangeText={(text)=>{onHandleChangeText(text)}}
+                        />
+                        <View style={styles.buttonContainer}>
+                        <Button title="Limpiar" onPress={onReset} color={colors.primary}/>
+                        <Button title="Confirmar" onPress={onConfirmed} color={colors.primary}/>
+                        </View>
+                    </Card>
+                    <ConfirmedOutput/>
                 </View>
-            </Card>
-            
-       </View> 
+            </ScrollView>
+       </TouchableWithoutFeedback>
     )
 }
 
